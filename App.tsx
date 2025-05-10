@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
 import React from 'react'
-import VoiceControlledGrid from './src/components/VoiceControlledGrid'
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import VoiceControlledGrid from './src/screens/VoiceControlledGrid';
+import { moderateScale } from 'react-native-size-matters';
 
 const App = () => {
   return (

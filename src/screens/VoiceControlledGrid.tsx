@@ -1,120 +1,35 @@
-import React, { useState, useEffect } from 'react';
+// VoiceControlledGrid.tsx
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Canvas, Path, Skia, Circle, Group } from '@shopify/react-native-skia';
+import { Canvas, Path, Circle, Group, Skia } from '@shopify/react-native-skia';
 import { moderateScale } from 'react-native-size-matters';
-import Voice from '@react-native-voice/voice';
+import { useVoiceControl } from '../components/useVoiceControl';
 
 const GRID_SIZE = 9;
 const CELL_SIZE = moderateScale(40);
 
 const VoiceControlledGrid: React.FC = () => {
-
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [commands, setCommands] = useState<string[]>([]);
-    const [isRecording, setIsRecording] = useState(false);
 
-    useEffect(() => {
-        Voice.onSpeechResults = handleSpeechResults;
-        Voice.onSpeechError = handleSpeechError;
-
-        return () => {
-            Voice.destroy().then(Voice.removeAllListeners);
-        };
-    }, []);
-
-    const handleSpeechResults = (event: any) => {
-        const result = event.value[0];
-        addCommand(result);
-        processVoiceCommand(result);
-    };
-
-    const processVoiceCommand = (command: string) => {
-        if (command.includes('left')) {
-            moveDot('left');
-        } else if (command.includes('right')) {
-            moveDot('right');
-        } else if (command.includes('up')) {
-            moveDot('up');
-        } else if (command.includes('down')) {
-            moveDot('down');
-        } else if (command.startsWith('move')) {
-            const match = command.match(/move (\w+) by (\d+)/);
-            if (match) {
-                const direction = match[1];
-                const steps = parseInt(match[2], 10);
-                moveDot(direction, steps);
-            }
-        }
-    };
-
-    const handleSpeechError = (error: any) => {
-        console.error("Speech Error:", error);
-    };
-
-    const moveDot = (direction: string, steps: number = 1) => {
-        setPosition(prev => {
-            let { x, y } = prev;
-            const GRID_SIZE = 9;
-            switch (direction) {
-                case 'up':
-                    y = (y - steps + GRID_SIZE) % GRID_SIZE;
-                    break;
-                case 'down':
-                    y = (y + steps) % GRID_SIZE;
-                    break;
-                case 'left':
-                    x = (x - steps + GRID_SIZE) % GRID_SIZE;
-                    break;
-                case 'right':
-                    x = (x + steps) % GRID_SIZE;
-                    break;
-            }
-            return { x, y };
-        });
-    };
-
-    const addCommand = (command: string) => {
-        setCommands(prev => [command, ...prev].slice(0, 3));
-    };
-
-    const startRecording = async () => {
-        try {
-            await Voice.start('en-US');
-            setIsRecording(true);
-        } catch (error) {
-            console.error("Error starting voice recognition:", error);
-        }
-    };
-
-    const stopRecording = async () => {
-        try {
-            await Voice.stop();
-            setIsRecording(false);
-        } catch (error) {
-            console.error("Error stopping voice recognition:", error);
-        }
-    };
+    // Using the voice control logic hook
+    const { isRecording, startRecording, stopRecording } = useVoiceControl(setPosition, setCommands);
 
     const createGridPath = () => {
         const path = Skia.Path.Make();
         for (let i = 0; i <= GRID_SIZE; i++) {
-            // Vertical lines
             path.moveTo(i * CELL_SIZE, 0);
             path.lineTo(i * CELL_SIZE, GRID_SIZE * CELL_SIZE);
-
-            // Horizontal lines
             path.moveTo(0, i * CELL_SIZE);
             path.lineTo(GRID_SIZE * CELL_SIZE, i * CELL_SIZE);
         }
         return path;
     };
 
-    // Reset the grid and commands
     const resetGrid = () => {
         setPosition({ x: 0, y: 0 });
         setCommands([]);
-        setIsRecording(false);
     };
 
     return (
@@ -150,12 +65,10 @@ const VoiceControlledGrid: React.FC = () => {
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.reset]}
+                    style={styles.reset}
                     onPress={resetGrid}
                 >
-                    <Text style={styles.buttonText}>
-                        {'Reset'}
-                    </Text>
+                    <Text style={styles.buttonText}>Reset</Text>
                 </TouchableOpacity>
             </View>
         </GestureHandlerRootView>
