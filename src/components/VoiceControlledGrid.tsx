@@ -110,6 +110,13 @@ const VoiceControlledGrid: React.FC = () => {
         return path;
     };
 
+    // Reset the grid and commands
+    const resetGrid = () => {
+        setPosition({ x: 0, y: 0 });
+        setCommands([]);
+        setIsRecording(false);
+    };
+
     return (
         <GestureHandlerRootView style={styles.container}>
             <Canvas style={styles.canvas}>
@@ -140,6 +147,14 @@ const VoiceControlledGrid: React.FC = () => {
                 >
                     <Text style={styles.buttonText}>
                         {isRecording ? 'Stop Recording' : 'Start Recording'}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.reset]}
+                    onPress={resetGrid}
+                >
+                    <Text style={styles.buttonText}>
+                        {'Reset'}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -187,6 +202,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    reset: {
+        marginTop: moderateScale(10),
+        backgroundColor: '#007AFF',
+        padding: moderateScale(15),
+        paddingHorizontal: moderateScale(77),
+        borderRadius: moderateScale(20),
     },
 });
 
