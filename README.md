@@ -1,6 +1,11 @@
 ### 🕹️ Voice-Controlled Grid Navigation (React Native + TypeScript) 🎮✨
 This project implements a voice-controlled 9×9 grid navigation app in React Native using TypeScript. It uses the Skia library for drawing the grid and a custom native module for voice recognition on both iOS and Android. 🎨🎧📱
 
+<div style="display: flex; gap: 100px;">
+    <img src="https://github.com/mksmanishp/VoiceControl/blob/main/screenshot/s1.png" width="200" height="400">
+    <img src="https://github.com/mksmanishp/VoiceControl/blob/main/screenshot/s2.jpeg" width="200" height="400">
+</div>
+
 ## 📋 Features 📝🚀🔧
 9×9 Grid Navigation:
 
