@@ -1,97 +1,129 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+### 🕹️ Voice-Controlled Grid Navigation (React Native + TypeScript) 🎮✨
+This project implements a voice-controlled 9×9 grid navigation app in React Native using TypeScript. It uses the Skia library for drawing the grid and a custom native module for voice recognition on both iOS and Android. 🎨🎧📱
 
-# Getting Started
+## 📋 Features 📝🚀🔧
+9×9 Grid Navigation:
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+A grid with visible lines and a movable dot. 🎯
 
-## Step 1: Start Metro
+Dot moves based on voice commands. 🗣️
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Edge wrapping to keep the dot within the grid. 🔄
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Voice Command Support:
 
-```sh
-# Using npm
-npm start
+Supports commands like "left", "right", "up", "down" (single step). ⬅️➡️⬆️⬇️
 
-# OR using Yarn
-yarn start
-```
+Multi-step commands like "move left by 3". 🏃‍♂️
 
-## Step 2: Build and run your app
+Visual Feedback:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+Displays current position coordinates. 📍
 
-### Android
+Shows 3 recent voice commands. 📝
 
-```sh
-# Using npm
-npm run android
+Includes a recording status indicator. 🎙️
 
-# OR using Yarn
-yarn android
-```
+Reset Functionality:
 
-### iOS
+Resets dot position and command history. 🔄
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Native Voice Recognition:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Integrates with Android's SpeechRecognizer and iOS's AVSpeechRecognizer. 📱🎙️
 
-```sh
-bundle install
-```
+## 🛠️ Implementation Approach 🔨⚙️🎯
+Grid Drawing:
 
-Then, and every time you update your native dependencies, run:
+Created using react-native-skia for efficient and precise rendering. 🎨
 
-```sh
-bundle exec pod install
-```
+Voice Command Handling:
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Custom native bridge for voice recognition. 🌉
 
-```sh
-# Using npm
-npm run ios
+Supports basic and multi-step commands with precise grid movement. 🚶‍♂️🗺️
 
-# OR using Yarn
-yarn ios
-```
+State Management:
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+React state for dot position and recent command history. 🔄📝
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+Edge Wrapping Logic:
 
-## Step 3: Modify your app
+Keeps the dot within the grid with seamless looping. 🔄🌍
 
-Now that you have successfully run the app, let's make changes!
+Optimized Event Handling:
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Efficiently handles voice inputs without lag. 🏃‍♂️💨
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🚀 Setup and Running Instructions 🛠️📦📲
+Prerequisites
+Node.js (v18+) 🌳
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+Yarn or npm 💻
 
-## Congratulations! :tada:
+React Native CLI 🔧
 
-You've successfully run and modified your React Native App. :partying_face:
+Android Studio or Xcode 📱
 
-### Now what?
+1. Dependencies
+   
+     "@react-native-voice/voice": "^3.2.4",
+    "@shopify/react-native-skia": "^2.0.0",
+    "react": "19.0.0",
+    "react-native": "0.79.2",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-reanimated": "^3.17.5",
+    "react-native-size-matters": "^0.4.2"
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+3. Install Dependencies
+bash
+Copy
+Edit
+yarn install
+4. Link Native Modules (if needed)
+bash
+Copy
+Edit
+npx react-native link
+5. Run the Application
+Android:
 
-# Troubleshooting
+bash
+Copy
+Edit
+npx react-native run-android
+iOS:
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+bash
+Copy
+Edit
+npx react-native run-ios
+5. Test Voice Commands
+Make sure your emulator or device has microphone permissions enabled. 🎤
 
-# Learn More
+Use commands like "left", "right", "move down by 3" to control the dot. 🎮
 
-To learn more about React Native, take a look at the following resources:
+6. Reset Button
+Use the Reset button to clear the current position and command history. 🔄🔘
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 📂 Directory Structure 🗂️📁🛠️
+css
+Copy
+Edit
+VoiceControlGrid/
+├── android/
+├── ios/
+├── src/
+│   ├── components/
+│   │   └── useVoiceControl.ts
+│   │   └── VoiceControlledGrid.tsx
+│   └── App.tsx
+├── README.md
+└── package.json
+## 📝 Notes 📖💡🔧
+Make sure to test on a real device or a well-configured emulator for voice recognition. 🎧📱
+
+For iOS, ensure microphone permissions are correctly set in Info.plist. 🎤📜
+
+## 📧 Support 💬📞💻
+If you have any questions or run into issues, feel free to reach out. 💬
