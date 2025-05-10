@@ -1,10 +1,11 @@
 // VoiceControlledGrid.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Canvas, Path, Circle, Group, Skia } from '@shopify/react-native-skia';
 import { moderateScale } from 'react-native-size-matters';
 import { useVoiceControl } from '../components/useVoiceControl';
+import SpeechRecognition from '../components/SpeechRecognition';
 
 // Listen for events
 
@@ -12,13 +13,11 @@ import { useVoiceControl } from '../components/useVoiceControl';
 const GRID_SIZE = 9;
 const CELL_SIZE = moderateScale(40);
 
-const VoiceControlledGrid: React.FC = () => {
+const VoiceControlGridNative: React.FC = () => {
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
-    const [commands, setCommands] = useState<string[]>([]);
+    const [command, setCommand] = useState('');
 
-    // Using the voice control logic hook
-    const { isRecording, startRecording, stopRecording } = useVoiceControl(setPosition, setCommands);
-
+    console.log("xfdfsdf")
     const createGridPath = () => {
         const path = Skia.Path.Make();
         for (let i = 0; i <= GRID_SIZE; i++) {
@@ -30,10 +29,30 @@ const VoiceControlledGrid: React.FC = () => {
         return path;
     };
 
-    const resetGrid = () => {
-        setPosition({ x: 0, y: 0 });
-        setCommands([]);
+    useEffect(() => {
+        SpeechRecognition.onResults((result) => {
+            console.log('Speech Result:', result);
+            setCommand(result);
+        });
+
+        SpeechRecognition.onError((error) => {
+            console.error('Speech Error:', error);
+        });
+
+        return () => {
+            SpeechRecognition.removeListeners();
+        };
+    }, []);
+
+    const startListening = () => {
+        console.log("start")
+        SpeechRecognition.startListening();
     };
+
+    const stopListening = () => {
+        SpeechRecognition.stopListening();
+    };
+
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -50,28 +69,20 @@ const VoiceControlledGrid: React.FC = () => {
             </Canvas>
 
             <View style={styles.infoPanel}>
-                <Text style={styles.infoText}>Position: ({position.x}, {position.y})</Text>
-
-                <View style={styles.commandList}>
-                    <Text style={styles.commandText}>Previous Commands:</Text>
-                    {commands.map((cmd, index) => (
-                        <Text key={index} style={styles.commandText}>{cmd}</Text>
-                    ))}
-                </View>
 
                 <TouchableOpacity
-                    style={[styles.recordButton, isRecording && styles.recordingButton]}
-                    onPress={isRecording ? stopRecording : startRecording}
+                    style={[styles.recordButton]}
+                    onPress={startListening}
                 >
                     <Text style={styles.buttonText}>
-                        {isRecording ? 'Stop Recording' : 'Start Recording'}
+                        {'Start Recording'}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={styles.reset}
-                    onPress={resetGrid}
+                    style={[styles.recordButton]}
+                    onPress={stopListening}
                 >
-                    <Text style={styles.buttonText}>Reset</Text>
+                    <Text style={styles.buttonText}> {'Stop Recording'}</Text>
                 </TouchableOpacity>
             </View>
         </GestureHandlerRootView>
@@ -123,9 +134,8 @@ const styles = StyleSheet.create({
         marginTop: moderateScale(10),
         backgroundColor: '#007AFF',
         padding: moderateScale(15),
-        paddingHorizontal: moderateScale(77),
         borderRadius: moderateScale(20),
     },
 });
 
-export default VoiceControlledGrid;
+export default VoiceControlGridNative;
