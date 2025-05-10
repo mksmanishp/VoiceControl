@@ -1,20 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Canvas, Path, Skia, Circle, Group } from '@shopify/react-native-skia';
 import { moderateScale } from 'react-native-size-matters';
+import Voice from '@react-native-voice/voice';
 
 const GRID_SIZE = 9;
 const CELL_SIZE = moderateScale(40);
 
 const VoiceControlledGrid: React.FC = () => {
+
     const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [commands, setCommands] = useState<string[]>([]);
     const [isRecording, setIsRecording] = useState(false);
 
+    useEffect(() => {
+        Voice.onSpeechResults = handleSpeechResults;
+        Voice.onSpeechError = handleSpeechError;
+
+        return () => {
+            Voice.destroy().then(Voice.removeAllListeners);
+        };
+    }, []);
+
+    const handleSpeechResults = (event: any) => {
+        const result = event.value[0];
+        addCommand(result);
+        processVoiceCommand(result);
+    };
+
+    const processVoiceCommand = (command: string) => {
+        if (command.includes('left')) {
+            moveDot('left');
+        } else if (command.includes('right')) {
+            moveDot('right');
+        } else if (command.includes('up')) {
+            moveDot('up');
+        } else if (command.includes('down')) {
+            moveDot('down');
+        } else if (command.startsWith('move')) {
+            const match = command.match(/move (\w+) by (\d+)/);
+            if (match) {
+                const direction = match[1];
+                const steps = parseInt(match[2], 10);
+                moveDot(direction, steps);
+            }
+        }
+    };
+
+    const handleSpeechError = (error: any) => {
+        console.error("Speech Error:", error);
+    };
+
     const moveDot = (direction: string, steps: number = 1) => {
         setPosition(prev => {
             let { x, y } = prev;
+            const GRID_SIZE = 9;
             switch (direction) {
                 case 'up':
                     y = (y - steps + GRID_SIZE) % GRID_SIZE;
@@ -37,13 +78,21 @@ const VoiceControlledGrid: React.FC = () => {
         setCommands(prev => [command, ...prev].slice(0, 3));
     };
 
-    const handleStartStopRecording = () => {
-        setIsRecording(prev => !prev);
-        // Simulate recording status for testing purposes
-        if (isRecording) {
-            // Stop recording action logic (e.g., invoke speech recognition here)
-        } else {
-            // Start recording action logic (e.g., start speech recognition here)
+    const startRecording = async () => {
+        try {
+            await Voice.start('en-US');
+            setIsRecording(true);
+        } catch (error) {
+            console.error("Error starting voice recognition:", error);
+        }
+    };
+
+    const stopRecording = async () => {
+        try {
+            await Voice.stop();
+            setIsRecording(false);
+        } catch (error) {
+            console.error("Error stopping voice recognition:", error);
         }
     };
 
@@ -65,7 +114,7 @@ const VoiceControlledGrid: React.FC = () => {
         <GestureHandlerRootView style={styles.container}>
             <Canvas style={styles.canvas}>
                 <Group>
-                    <Path path={createGridPath()} color="#888" style="stroke" strokeWidth={2} />
+                    <Path path={createGridPath()} color="#888" style="stroke" strokeWidth={3} />
                     <Circle
                         cx={position.x * CELL_SIZE + CELL_SIZE / 2}
                         cy={position.y * CELL_SIZE + CELL_SIZE / 2}
@@ -87,7 +136,7 @@ const VoiceControlledGrid: React.FC = () => {
 
                 <TouchableOpacity
                     style={[styles.recordButton, isRecording && styles.recordingButton]}
-                    onPress={handleStartStopRecording}
+                    onPress={isRecording ? stopRecording : startRecording}
                 >
                     <Text style={styles.buttonText}>
                         {isRecording ? 'Stop Recording' : 'Start Recording'}
@@ -100,7 +149,6 @@ const VoiceControlledGrid: React.FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -126,11 +174,11 @@ const styles = StyleSheet.create({
         color: '#555',
     },
     recordButton: {
-        marginTop: 20,
+        marginTop: moderateScale(80),
         backgroundColor: '#007AFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
+        padding: moderateScale(15),
+        paddingHorizontal: moderateScale(50),
+        borderRadius: moderateScale(20),
     },
     recordingButton: {
         backgroundColor: '#FF6347',
